@@ -1,7 +1,8 @@
 from os import name
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 import csv
 import re
+from math import ceil
 
 template = """
 <html>
@@ -116,4 +117,32 @@ for party in party_names:
 party_names.sort(key=lambda party: -len(party_winners[party]))
 # print(party_names)
 
-# print(doc.prettify())
+for row_count in range(ceil(seats_in_unrep_parliament/10)):
+  row = doc.new_tag('tr', id=f'row_{row_count}')
+  doc.find('table').append(row)
+
+seat_count = 0
+for party in party_names:
+  for winner in party_winners[party]:
+    row_id = f'row_{seat_count//10}'
+    seat_count += 1
+    cell = doc.new_tag('td',class_=party)
+    cell.contents.append(NavigableString(winner[0]))
+    
+    # print(cell)
+    # break
+    print(row_id)
+    print(len(doc.find_all('tr')))
+    if len(doc.find_all('tr')) == 1:
+      print(doc.prettify())
+      break
+    # try:
+    doc.find(id=row_id).append(cell)
+    # except:
+    #   print(doc.prettify())
+    #   break
+    # if len(doc.find(id=row_id).find_all(recursive=False)) == 5:
+    #   blank = doc.new_tag('td',class_='isle')
+    #   doc.find(id=row_id).append(blank)
+
+# print(doc)
