@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup, NavigableString
 import csv
 import re
 from math import ceil
+from pprint import pprint
+import json
 
 template = """
 <html>
@@ -97,10 +99,11 @@ for candidate in candidates:
     raise Exception('no party for',name_and_party)
 
 seats_in_unrep_parliament = round(SEATS_IN_PARLIAMENT*total_unrep_votes/total_rep_votes)
-print(seats_in_unrep_parliament, 'unrep seats')
+new_seat_count = 0
 
 for party in party_names:
   party_total_vote[party]['seats'] = round(seats_in_unrep_parliament*party_total_vote[party]['unrep_votes']/total_unrep_votes)
+  new_seat_count += party_total_vote[party]['seats']
   # print(party,'rep votes=',party_total_vote[party]['rep_votes'], 
   # 'unrep votes=',party_total_vote[party]['unrep_votes'],
   # 'unrep seats=',round(seats_in_unrep_parliament*party_total_vote[party]['unrep_votes']/total_unrep_votes))
@@ -108,41 +111,57 @@ for party in party_names:
   # print(party_candidate_vote[party])
   party_winners[party] = [(candidate, party_candidate_vote[party][candidate]['unrep_votes']) for candidate in list(party_candidate_vote[party])]
   party_winners[party] = sorted(party_winners[party], key=lambda candidate: candidate[1]*-1)[:party_total_vote[party]['seats']]
-  # print(party,'winners:',party_winners[party])
+  # print()
+  # print(party,'winners:')
+  # print(json.dumps(party_winners[party], indent=2))
 
-# new_tag = doc.new_tag('a',href='blah')
-# doc.find('p').append(new_tag)
-# doc.find('body').insert(0,new_tag)
-
+print('unrep seats', seats_in_unrep_parliament, new_seat_count)
+seats_in_unrep_parliament = new_seat_count
 party_names.sort(key=lambda party: -len(party_winners[party]))
 # print(party_names)
+row_count = ceil(seats_in_unrep_parliament/10)
+print(row_count)
 
-for row_count in range(ceil(seats_in_unrep_parliament/10)):
-  row = doc.new_tag('tr', id=f'row_{row_count}')
+for row_i in range(row_count):
+  row = doc.new_tag('tr', id=f'row_{row_i}')
   doc.find('table').append(row)
 
-seat_count = 0
+gov_seat_count = 0
+opp_seat_count = 0
+last_row_seat_count = row_count*10 - seats_in_unrep_parliament
+print('lrc',last_row_seat_count)
 for party in party_names:
   for winner in party_winners[party]:
-    row_id = f'row_{seat_count//10}'
-    seat_count += 1
-    cell = doc.new_tag('td',class_=party)
-    cell.contents.append(NavigableString(winner[0]))
+    # if party == 'Independent':
+    #   print(seat_count, row_count, (seat_count//5) % row_count)
+    offset = 0
+    if gov_seat_count > seats_in_unrep_parliament/2 or opp_seat_count > seats_in_unrep_parliament/2:
+      offset = 10-last_row_seat_count
+    if party == party_names[0]:
+      group = ((gov_seat_count+offset)//5)
+      gov_seat_count += 1
+    else:
+      group = ((opp_seat_count+offset)//5)
+      opp_seat_count += 1
+    row = group if group < row_count else row_count-(group - row_count)
+    row_id = f'row_{row}'
     
-    # print(cell)
-    # break
-    print(row_id)
-    print(len(doc.find_all('tr')))
-    if len(doc.find_all('tr')) == 1:
-      print(doc.prettify())
-      break
-    # try:
-    doc.find(id=row_id).append(cell)
-    # except:
-    #   print(doc.prettify())
-    #   break
-    # if len(doc.find(id=row_id).find_all(recursive=False)) == 5:
-    #   blank = doc.new_tag('td',class_='isle')
-    #   doc.find(id=row_id).append(blank)
+    if party != party_names[0] and len(doc.find(id=row_id).find_all(recursive=False)) == 0:
+      blank = doc.new_tag('td',class_='isle')
+      doc.find(id=row_id).append(blank)
 
-# print(doc)
+    cell = doc.new_tag('td',class_=party)
+    if opp_seat_count < seats_in_unrep_parliament/2:
+      doc.find(id=row_id).append(cell)
+    else:
+      doc.find(id=row_id).insert(0,cell)
+    cell.contents.append(NavigableString(winner[0]))
+
+    
+    if doc.find(id=row_id).find(class_=row_id) is None and len(doc.find(id=row_id).find_all(recursive=False)) == 5:
+      blank = doc.new_tag('td',class_='isle')
+      doc.find(id=row_id).append(blank)
+
+
+with open("parliament2019.html", "w") as file:
+    file.write(str(doc))
