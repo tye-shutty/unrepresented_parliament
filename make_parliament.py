@@ -135,7 +135,8 @@ for party in party_names:
     # if party == 'Independent':
     #   print(seat_count, row_count, (seat_count//5) % row_count)
     offset = 0
-    if gov_seat_count > seats_in_unrep_parliament/2 or opp_seat_count > seats_in_unrep_parliament/2:
+    threshold = (row_count*5-5)+last_row_seat_count/2
+    if gov_seat_count > threshold or opp_seat_count > threshold:
       offset = 10-last_row_seat_count
     if party == party_names[0]:
       group = ((gov_seat_count+offset)//5)
@@ -143,25 +144,32 @@ for party in party_names:
     else:
       group = ((opp_seat_count+offset)//5)
       opp_seat_count += 1
-    row = group if group < row_count else row_count-(group - row_count)
+    row = group if group < row_count else row_count-(1 + group - row_count)
     row_id = f'row_{row}'
-    
+    # print(row_id)
     if party != party_names[0] and len(doc.find(id=row_id).find_all(recursive=False)) == 0:
-      blank = doc.new_tag('td',class_='isle')
+      blank = doc.new_tag('td')
       doc.find(id=row_id).append(blank)
+      blank['class'] = 'aisle'
 
-    cell = doc.new_tag('td',class_=party)
+    cell = doc.new_tag('td')
     if opp_seat_count < seats_in_unrep_parliament/2:
       doc.find(id=row_id).append(cell)
     else:
       doc.find(id=row_id).insert(0,cell)
+    cell['class'] = party
     cell.contents.append(NavigableString(winner[0]))
 
-    
-    if doc.find(id=row_id).find(class_=row_id) is None and len(doc.find(id=row_id).find_all(recursive=False)) == 5:
-      blank = doc.new_tag('td',class_='isle')
+    if (
+      doc.find(id=row_id).select_one(".aisle") is None and 
+      (len(doc.find(id=row_id).find_all(recursive=False)) == 5
+      or winner[0] == party_winners[party_names[0]][-1][0])
+    ):
+      if row == 64:
+        print(doc.find(id=row_id).prettify())
+      blank = doc.new_tag('td')
       doc.find(id=row_id).append(blank)
-
+      blank['class'] = 'aisle'
 
 with open("parliament2019.html", "w") as file:
-    file.write(str(doc))
+  file.write(str(doc))
