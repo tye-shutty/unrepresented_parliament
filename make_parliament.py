@@ -12,7 +12,7 @@ template = """
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     <style>
-   .house tr {
+    .house tr {
       display: flex;
       justify-content: center;
     }
@@ -28,7 +28,8 @@ template = """
     }
     .aisle{
       height: 16;
-      width: 16;}
+      width: 16;
+    }
     .in_parliament{
       height: 12;
       width: 12;
@@ -84,8 +85,11 @@ template = """
       <tr><td class="seat Libertarian"></td><td>Libertarian</td></tr>
       <tr><td class="seat Parti_Rhinocéros_Party"></td><td>Rhinocéros</td></tr>
     </table>
-    <table class="house">
-    </table>
+    <div class="_2019">
+      <h2>2019</h2>
+      <table class="house">
+      </table>
+    </div>
     <div class="explanation">
     </div>
   </body>
@@ -183,29 +187,28 @@ for party in party_names:
     x=(candidate, 
       party_candidate_vote[party][candidate]['unrep_votes'], 
       party_candidate_vote[party][candidate]['rep_votes'] > 0) 
-    print(x)
-    party_winners[party] += [x
-    ]
+    # print(x)
+    party_winners[party] += [x]
   party_winners[party] = sorted(party_winners[party], key=lambda candidate: candidate[1]*-1)[:party_total_vote[party]['seats']]
   # print()
   # print(party,'winners:')
   # print(json.dumps(party_winners[party], indent=2))
 
-print('unrep seats', seats_in_unrep_parliament, new_seat_count)
+# print('unrep seats', seats_in_unrep_parliament, new_seat_count)
 seats_in_unrep_parliament = new_seat_count
 party_names.sort(key=lambda party: -len(party_winners[party]))
 # print(party_names)
 row_count = ceil(seats_in_unrep_parliament/10)
-print(row_count)
+# print(row_count)
 
 for row_i in range(row_count):
   row = doc.new_tag('tr', id=f'row_{row_i}')
-  doc.find('table').append(row)
+  doc.find(class_='_2019').find('table').append(row)
 
 gov_seat_count = 0
 opp_seat_count = 0
 last_row_seat_count = seats_in_unrep_parliament - (row_count-1)*10
-print('lrc',last_row_seat_count)
+# print('lrc',last_row_seat_count)
 for party in party_names:
   for winner in party_winners[party]:
     # if party == 'Independent':
