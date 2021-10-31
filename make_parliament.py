@@ -11,14 +11,83 @@ template = """
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
+    <style>
+   .house tr {
+      display: flex;
+      justify-content: center;
+    }
+    .seat{
+      height: 16;
+      width: 16;
+      border: 1px;
+      border-color: black;
+      border-style: solid;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .aisle{
+      height: 16;
+      width: 16;}
+    .in_parliament{
+      height: 12;
+      width: 12;
+      background-color: black;
+      border-radius: 50%;
+    }
+    .Conservative{
+      background-color: blue;
+    }
+    .Green_Party{
+      background-color: green;
+    }
+    .Liberal{
+      background-color: red;
+    }
+    .NDP-New_Democratic_Party{
+      background-color: orange;
+    }
+    .Peoples_Party{
+      background-color: violet;
+    }
+    .Bloc_Québécois{
+      background-color: lightblue;
+    }
+    .Parti_Rhinocéros_Party{
+      background-color: brown;
+    }
+    .Independent{
+      background-color: grey;
+    }
+    .Christian_Heritage_Party{
+      background-color: darkmagenta;
+    }
+    .Libertarian{
+      background-color: yellow;
+    }
+    </style>
   </head>
 
   <body>
+    <h1>Parliament of the Unrepresented</h1>
+    <p>What if all the votes that didn't matter were given their own parliament, with the seats assigned proportionally?</p>
     <table>
+      <tr><td><div class="seat in_parliament"/></td><td>Elected to parliament</td></tr>
+      <tr><td class="seat Conservative"></td><td>Conservative</td></tr>
+      <tr><td class="seat Liberal"></td><td>Liberal</td></tr>
+      <tr><td class="seat NDP-New_Democratic_Party"></td><td>New Democratic</td></tr>
+      <tr><td class="seat Green_Party"></td><td>Green</td></tr>
+      <tr><td class="seat Bloc_Québécois"></td><td>Bloc Québécois</td></tr>
+      <tr><td class="seat Peoples_Party"></td><td>People's</td></tr>
+      <tr><td class="seat Independent"></td><td>Independent</td></tr>
+      <tr><td class="seat Christian_Heritage_Party"></td><td>Christian Heritage</td></tr>
+      <tr><td class="seat Libertarian"></td><td>Libertarian</td></tr>
+      <tr><td class="seat Parti_Rhinocéros_Party"></td><td>Rhinocéros</td></tr>
     </table>
-    <p class="overview">
-      Test
-    </p>
+    <table class="house">
+    </table>
+    <div class="explanation">
+    </div>
   </body>
 </html>
 """
@@ -109,7 +178,14 @@ for party in party_names:
   # 'unrep seats=',round(seats_in_unrep_parliament*party_total_vote[party]['unrep_votes']/total_unrep_votes))
 
   # print(party_candidate_vote[party])
-  party_winners[party] = [(candidate, party_candidate_vote[party][candidate]['unrep_votes']) for candidate in list(party_candidate_vote[party])]
+  party_winners[party] = []
+  for candidate in list(party_candidate_vote[party]):
+    x=(candidate, 
+      party_candidate_vote[party][candidate]['unrep_votes'], 
+      party_candidate_vote[party][candidate]['rep_votes'] > 0) 
+    print(x)
+    party_winners[party] += [x
+    ]
   party_winners[party] = sorted(party_winners[party], key=lambda candidate: candidate[1]*-1)[:party_total_vote[party]['seats']]
   # print()
   # print(party,'winners:')
@@ -128,14 +204,14 @@ for row_i in range(row_count):
 
 gov_seat_count = 0
 opp_seat_count = 0
-last_row_seat_count = row_count*10 - seats_in_unrep_parliament
+last_row_seat_count = seats_in_unrep_parliament - (row_count-1)*10
 print('lrc',last_row_seat_count)
 for party in party_names:
   for winner in party_winners[party]:
     # if party == 'Independent':
     #   print(seat_count, row_count, (seat_count//5) % row_count)
     offset = 0
-    threshold = (row_count*5-5)+last_row_seat_count/2
+    threshold = ((row_count-1)*5)+last_row_seat_count/2
     if gov_seat_count > threshold or opp_seat_count > threshold:
       offset = 10-last_row_seat_count
     if party == party_names[0]:
@@ -153,23 +229,36 @@ for party in party_names:
       blank['class'] = 'aisle'
 
     cell = doc.new_tag('td')
-    if opp_seat_count < seats_in_unrep_parliament/2:
+    if opp_seat_count <= seats_in_unrep_parliament/2:
       doc.find(id=row_id).append(cell)
     else:
       doc.find(id=row_id).insert(0,cell)
-    cell['class'] = party
-    cell.contents.append(NavigableString(winner[0]))
-
+    cell['class'] = 'seat '+'_'.join(party.replace('\'','').split(' '))
+    # cell['winner'] = winner[0]
+    if winner[2]:
+      dot = doc.new_tag('div')
+      cell.append(dot)
+      dot['class'] = 'in_parliament'
+    # name = doc.new_tag('div')
+    # cell.append(name)
+    cell['title'] = f'{winner[0]}: {winner[1]} unrepresented votes'
+    # name.contents.append(NavigableString(winner[0]))
+    # name.contents.append(NavigableString(f'{winner[1]} unrepresented votes'))
+    #UNCOMMENT (slow but needed):
+    # doc = BeautifulSoup(str(doc), 'html.parser') #find requires
     if (
       doc.find(id=row_id).select_one(".aisle") is None and 
       (len(doc.find(id=row_id).find_all(recursive=False)) == 5
       or winner[0] == party_winners[party_names[0]][-1][0])
     ):
-      if row == 64:
-        print(doc.find(id=row_id).prettify())
+      # if row == 64:
+      #   print(doc.find(id=row_id).prettify())
       blank = doc.new_tag('td')
       doc.find(id=row_id).append(blank)
       blank['class'] = 'aisle'
 
 with open("parliament2019.html", "w") as file:
-  file.write(str(doc))
+  file.write(doc.prettify())
+
+# for row in range(row_count):
+#   print(f'row {row} count = {len(doc.find(id=f"row_{row}").find_all(recursive=False))}')
