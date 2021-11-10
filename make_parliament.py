@@ -66,31 +66,51 @@ template = """
     .Libertarian{
       background-color: yellow;
     }
+    .vertical {
+      display: flex;
+    }
     </style>
   </head>
 
   <body>
     <h1>Parliament of the Unrepresented</h1>
-    <p>What if all the votes that didn't matter were given their own parliament, with the seats assigned proportionally?</p>
-    <table>
-      <tr><td><div class="seat in_parliament"/></td><td>Elected to parliament</td></tr>
-      <tr><td class="seat Conservative"></td><td>Conservative</td></tr>
-      <tr><td class="seat Liberal"></td><td>Liberal</td></tr>
-      <tr><td class="seat NDP-New_Democratic_Party"></td><td>New Democratic</td></tr>
-      <tr><td class="seat Green_Party"></td><td>Green</td></tr>
-      <tr><td class="seat Bloc_Québécois"></td><td>Bloc Québécois</td></tr>
-      <tr><td class="seat Peoples_Party"></td><td>People's</td></tr>
-      <tr><td class="seat Independent"></td><td>Independent</td></tr>
-      <tr><td class="seat Christian_Heritage_Party"></td><td>Christian Heritage</td></tr>
-      <tr><td class="seat Libertarian"></td><td>Libertarian</td></tr>
-      <tr><td class="seat Parti_Rhinocéros_Party"></td><td>Rhinocéros</td></tr>
-    </table>
-    <div class="_2019">
-      <h2>2019</h2>
-      <table class="house">
-      </table>
-    </div>
-    <div class="explanation">
+    <p>What if all the voters that didn't matter made their own parliament, with blackjack and proportional representation?</p>
+    <p>Voters are unrepresented if they could've stayed home without changing the results. So the only votes that are represented
+    are the votes for the winning candidate of an amount equal to the runner up candidate plus 1.</p>
+    <p>How many seats should our parliament have? Well I guess it's only fair if we take the number of seats in the House of Commons (HOC)
+    multiply that by the number of unrepresented votes divided by represented votes.</p>
+    <p>How should we assign seats? Proportional representation, of course, is the best way to improve representation.
+    Each party is given a share of seats proportional to its total vote share.</p>
+    <p>Who should sit in our parliament? The people the unrepresented voters voted for. In some cases, especially for the top Conservatives,
+    they will also sit in the HOC. Below you can see our members ranked (within party) in order from most unrepresented votes to least. Hover over the
+    seats to see more information.</p>
+    <div class="vertical">
+      <div class="unrep_2019">
+        <h2>2019 Unrepresented</h2>
+        <table class="house unrepresented">
+        </table>
+      </div>
+      <div class="rep_2019">
+        <h2>2019 Represented (HOC)</h2>
+        <table class="house represented">
+        </table>
+      </div>
+      <div>
+        <h3>Legend</h3>
+        <table>
+          <tr><td><div class="seat in_parliament"/></td><td>sits in both parliaments</td></tr>
+          <tr><td class="seat Conservative"></td><td>Conservative</td></tr>
+          <tr><td class="seat Liberal"></td><td>Liberal</td></tr>
+          <tr><td class="seat NDP-New_Democratic_Party"></td><td>New Democratic</td></tr>
+          <tr><td class="seat Green_Party"></td><td>Green</td></tr>
+          <tr><td class="seat Bloc_Québécois"></td><td>Bloc Québécois</td></tr>
+          <tr><td class="seat Peoples_Party"></td><td>People's</td></tr>
+          <tr><td class="seat Independent"></td><td>Independent</td></tr>
+          <tr><td class="seat Christian_Heritage_Party"></td><td>Christian Heritage</td></tr>
+          <tr><td class="seat Libertarian"></td><td>Libertarian</td></tr>
+          <tr><td class="seat Parti_Rhinocéros_Party"></td><td>Rhinocéros</td></tr>
+        </table>
+      </div>
     </div>
   </body>
 </html>
@@ -113,6 +133,7 @@ total_rep_votes = 0
 total_unrep_votes = 0
 SEATS_IN_PARLIAMENT = 338
 party_winners = {}
+SEATS_PER_AISLE = 10
 
 for candidate in candidates:
   (prov, district_name, district_num, name_and_party, residence, occupation, votes, vote_per, maj, maj_per) = candidate
@@ -198,33 +219,33 @@ for party in party_names:
 seats_in_unrep_parliament = new_seat_count
 party_names.sort(key=lambda party: -len(party_winners[party]))
 # print(party_names)
-row_count = ceil(seats_in_unrep_parliament/10)
+row_count = ceil(seats_in_unrep_parliament/(SEATS_PER_AISLE*2))
 # print(row_count)
 
 for row_i in range(row_count):
-  row = doc.new_tag('tr', id=f'row_{row_i}')
-  doc.find(class_='_2019').find('table').append(row)
+  row = doc.new_tag('tr', id=f'row_2019_{row_i}')
+  doc.find(class_='unrep_2019').find('table', class_='unrepresented').append(row)
 
 gov_seat_count = 0
 opp_seat_count = 0
-last_row_seat_count = seats_in_unrep_parliament - (row_count-1)*10
+last_row_seat_count = seats_in_unrep_parliament - (row_count-1)*(SEATS_PER_AISLE*2)
 # print('lrc',last_row_seat_count)
 for party in party_names:
   for winner in party_winners[party]:
     # if party == 'Independent':
     #   print(seat_count, row_count, (seat_count//5) % row_count)
     offset = 0
-    threshold = ((row_count-1)*5)+last_row_seat_count/2
+    threshold = ((row_count-1)*SEATS_PER_AISLE)+last_row_seat_count/2
     if gov_seat_count > threshold or opp_seat_count > threshold:
-      offset = 10-last_row_seat_count
+      offset = (SEATS_PER_AISLE*2)-last_row_seat_count
     if party == party_names[0]:
-      group = ((gov_seat_count+offset)//5)
+      group = ((gov_seat_count+offset)//SEATS_PER_AISLE)
       gov_seat_count += 1
     else:
-      group = ((opp_seat_count+offset)//5)
+      group = ((opp_seat_count+offset)//SEATS_PER_AISLE)
       opp_seat_count += 1
     row = group if group < row_count else row_count-(1 + group - row_count)
-    row_id = f'row_{row}'
+    row_id = f'row_2019_{row}'
     # print(row_id)
     if party != party_names[0] and len(doc.find(id=row_id).find_all(recursive=False)) == 0:
       blank = doc.new_tag('td')
@@ -251,7 +272,7 @@ for party in party_names:
     # doc = BeautifulSoup(str(doc), 'html.parser') #find requires
     if (
       doc.find(id=row_id).select_one(".aisle") is None and 
-      (len(doc.find(id=row_id).find_all(recursive=False)) == 5
+      (len(doc.find(id=row_id).find_all(recursive=False)) == SEATS_PER_AISLE
       or winner[0] == party_winners[party_names[0]][-1][0])
     ):
       # if row == 64:
