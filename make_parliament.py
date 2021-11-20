@@ -6,128 +6,10 @@ from math import ceil
 from pprint import pprint
 import json
 
-template = """
-<html>
-  <head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta content="utf-8" http-equiv="encoding">
-    <style>
-    .house tr {
-      display: flex;
-      justify-content: center;
-    }
-    .seat{
-      height: 16;
-      width: 16;
-      border: 1px;
-      border-color: black;
-      border-style: solid;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .aisle{
-      height: 16;
-      width: 16;
-    }
-    .in_parliament{
-      height: 12;
-      width: 12;
-      background-color: black;
-      border-radius: 50%;
-    }
-    .Conservative{
-      background-color: blue;
-    }
-    .Green_Party{
-      background-color: green;
-    }
-    .Liberal{
-      background-color: red;
-    }
-    .NDP-New_Democratic_Party{
-      background-color: orange;
-    }
-    .Peoples_Party{
-      background-color: violet;
-    }
-    .Bloc_Québécois{
-      background-color: lightblue;
-    }
-    .Parti_Rhinocéros_Party{
-      background-color: brown;
-    }
-    .Independent{
-      background-color: grey;
-    }
-    .Christian_Heritage_Party{
-      background-color: darkmagenta;
-    }
-    .Libertarian{
-      background-color: yellow;
-    }
-    .Free_Party_Canada{
-      background-color: darkgoldenrod;
-    }
-    .Maverick_Party{
-      background-color: darkolivegreen;
-    }
-    .vertical {
-      display: flex;
-    }
-    </style>
-  </head>
-
-  <body>
-    <h1>Parliament of the Unrepresented</h1>
-    <p>What if all the voters that didn't matter made their own parliament, with blackjack and proportional representation?</p>
-    <p>Voters are unrepresented if they could've stayed home without changing the results. So the only votes that are represented
-    are the votes for the winning candidate of an amount equal to the runner up candidate plus one.</p>
-    <p>How many seats should our parliament have? Well I guess it's only fair if we take the number of seats in the House of Commons (HOC)
-    and multiply that by the number of unrepresented votes divided by represented votes. In 2019, that was 14,367 votes per seat.</p>
-    <p>How should we assign seats? Proportional representation, of course, is the best way to improve representation.
-    Each party is given a share of seats proportional to its total vote share.</p>
-    <p>Who should sit in our parliament? The people the unrepresented voters voted for. In some cases, especially for the top Conservatives,
-    they will also sit in the HOC. Below you can see our members ranked (within party) in order from most unrepresented votes to least. Hover over the
-    seats to see more information.</p>
-    <div class="vertical">
-      <div class="unrep_2019">
-        <h2>2019 Unrepresented</h2>
-        <table class="house unrepresented">
-        </table>
-      </div>
-      <div class="unrep_2021">
-        <h2>2021 Unrepresented</h2>
-        <table class="house unrepresented">
-        </table>
-      </div>
-      <!--<div class="rep_2019">
-        <h2>2019 Represented (HOC)</h2>
-        <table class="house represented">
-        </table>
-      </div>-->
-      <div>
-        <h3>Legend</h3>
-        <table>
-          <tr><td><div class="seat in_parliament"/></td><td>sits in both parliaments</td></tr>
-          <tr><td class="seat Conservative"></td><td>Conservative</td></tr>
-          <tr><td class="seat Liberal"></td><td>Liberal</td></tr>
-          <tr><td class="seat NDP-New_Democratic_Party"></td><td>New Democratic</td></tr>
-          <tr><td class="seat Green_Party"></td><td>Green</td></tr>
-          <tr><td class="seat Bloc_Québécois"></td><td>Bloc Québécois</td></tr>
-          <tr><td class="seat Peoples_Party"></td><td>People's</td></tr>
-          <tr><td class="seat Independent"></td><td>Independent</td></tr>
-          <tr><td class="seat Christian_Heritage_Party"></td><td>Christian Heritage</td></tr>
-          <tr><td class="seat Libertarian"></td><td>Libertarian</td></tr>
-          <tr><td class="seat Parti_Rhinocéros_Party"></td><td>Rhinocéros</td></tr>
-          <tr><td class="seat Free_Party_Canada"></td><td>Free Party</td></tr>
-          <tr><td class="seat Maverick_Party"></td><td>Maverick</td></tr>
-        </table>
-      </div>
-    </div>
-  </body>
-</html>
-"""
+template = ''
+with open('template.html', 'r') as t_file:
+  for line in t_file:
+    template += line
 SEATS_IN_PARLIAMENT = 338
 PARTY_NAMES = ['Liberal', 'Conservative', 'NDP-New Democratic Party', 'Green Party', 'VCP', "People's Party", 'Christian Heritage Party',
 'Independent', 'National Citizens Alliance', 'Communist', 'Animal Protection Party', 'Libertarian', 'Parti Rhinocéros Party', 'Bloc Québécois',
@@ -218,7 +100,7 @@ def make_unrep_parliament(doc, candidates, year):
 
   for row_i in range(row_count):
     row = doc.new_tag('tr', id=f'row_{year}_{row_i}')
-    doc.find(class_=f'unrep_{year}').find('table', class_='unrepresented').append(row)
+    doc.find(id=f'_{year}').find(class_='unrep').find('table', class_='unrepresented').append(row)
 
   gov_seat_count = 0
   opp_seat_count = 0

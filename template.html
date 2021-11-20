@@ -1,0 +1,307 @@
+
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <style>
+    .house tr {
+      display: flex;
+      justify-content: center;
+    }
+    .seat{
+      height: 16;
+      width: 16;
+      border: 1px;
+      border-color: black;
+      border-style: solid;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .aisle{
+      height: 16;
+      width: 16;
+    }
+    .in_parliament{
+      height: 10;
+      width: 10;
+      background-color: black;
+      border-radius: 50%;
+    }
+    .Conservative{
+      background-color: blue;
+    }
+    .Green_Party{
+      background-color: green;
+    }
+    .Liberal{
+      background-color: red;
+    }
+    .NDP-New_Democratic_Party{
+      background-color: orange;
+    }
+    .Peoples_Party{
+      background-color: violet;
+    }
+    .Bloc_Québécois{
+      background-color: lightblue;
+    }
+    .Parti_Rhinocéros_Party{
+      background-color: brown;
+    }
+    .Independent{
+      background-color: grey;
+    }
+    .Christian_Heritage_Party{
+      background-color: darkmagenta;
+    }
+    .Libertarian{
+      background-color: yellow;
+    }
+    .Free_Party_Canada{
+      background-color: darkgoldenrod;
+    }
+    .Maverick_Party{
+      background-color: darkolivegreen;
+    }
+    .Conservative_accessible{
+      background: repeating-linear-gradient(
+        135deg,
+        blue,
+        blue 10px,
+        white 10px,
+        white 15px
+      );
+    }
+    .Green_Party_accessible{
+      background: repeating-linear-gradient(
+        15deg,
+        green,
+        green 5px,
+        white 5px,
+        white 10px
+      );
+    }
+    .Liberal_accessible{
+      background: repeating-linear-gradient(
+        90deg,
+        red,
+        red 10px,
+        white 10px,
+        white 15px
+      );
+    }
+    .NDP-New_Democratic_Party_accessible{
+      background: repeating-linear-gradient(
+        45deg,
+        orange,
+        orange 10px,
+        white 10px,
+        white 15px
+      );
+    }
+    .Peoples_Party_accessible{
+      background: repeating-linear-gradient(
+        165deg,
+        purple,
+        purple 5px,
+        white 5px,
+        white 10px
+      );
+    }
+    .Bloc_Québécois_accessible{
+      background: repeating-linear-gradient(
+        120deg,
+        blue,
+        blue 5px,
+        white 5px,
+        white 10px
+      );
+    }
+    .Parti_Rhinocéros_Party_accessible{
+      background: repeating-linear-gradient(
+        100deg,
+        brown,
+        brown 5px,
+        white 5px,
+        white 10px
+      );
+    }
+    .Independent_accessible{
+      background: repeating-linear-gradient(
+        80deg,
+        grey,
+        grey 5px,
+        white 5px,
+        white 10px
+      );
+    }
+    .Christian_Heritage_Party_accessible{
+      background: repeating-linear-gradient(
+        180deg,
+        darkmagenta,
+        darkmagenta 5px,
+        white 5px,
+        white 10px
+      );
+    }
+    .Libertarian_accessible{
+      background: repeating-linear-gradient(
+        15deg,
+        darkred,
+        darkred 10px,
+        white 10px,
+        white 15px
+      );
+    }
+    .Free_Party_Canada_accessible{
+      background: repeating-linear-gradient(
+        110deg,
+        darkgoldenrod,
+        darkgoldenrod 10px,
+        white 10px,
+        white 15px
+      );
+    }
+    .Maverick_Party_accessible{
+      background: repeating-linear-gradient(
+        70deg,
+        darkolivegreen,
+        darkolivegreen 10px,
+        white 10px,
+        white 15px
+      );
+    }
+    .vertical {
+      display: flex;
+    }
+    </style>
+  <script>
+    function toggleElement(my_id){
+      year_el = document.getElementById(my_id)
+       if ('style' in year_el && year_el['style']['display'] == 'none'){
+         year_el['style'] = 'display: inline;'
+       } else{
+         year_el['style'] = 'display: none;'
+       }
+    }
+    function toggleAccessibility(){
+      seats = document.getElementsByClassName('seat')
+      for (seat in seats){
+        new_list = []
+        for (c in seat['classList']){
+          if (c != 'seat'){
+            if(c.includes('_accessible')){
+              new_list.push(c.replace('_accessible',''))
+            }else{
+              new_list.push(c+'_accessible')
+            }
+          }else{
+            new_list.push(c)
+          }
+        }
+        seat['classList'] = new_list
+      }
+    }
+    function toggleAccessibility(){
+      seats = document.getElementsByClassName('seat')
+      x = 0
+      for (seat of seats){
+        new_list = []
+        for (c of seat.classList){
+          x ++
+          if (c != 'seat' && c != 'in_parliament'){
+            if(c.includes('_accessible')){
+              new_list.push(c.replace('_accessible',''))
+            }else{
+              new_list.push(c+'_accessible')
+            }
+          }else{
+            new_list.push(c)
+          }
+        }
+        seat.className = new_list.join(' ')
+      }
+      console.log(x+' updates')
+    }
+  </script>
+  </head>
+
+  <body>
+    <h1>Parliament of the Unrepresented</h1>
+    <div id="nav">
+      <button onclick="toggleAccessibility()">Colour Blind Accessibility
+      </button>
+      <button onclick="toggleElement('_2019')">2019</button>
+      <button onclick="toggleElement('_2021')">2021</button>
+      <button onclick="toggleElement('legend')">legend</button>
+    </div>
+    <p>What if all the voters that didn't matter made their own parliament, with
+      blackjack and proportional representation?</p>
+    <p>Hover over the seats to see more information.</p>
+    <div class="vertical">
+      <div id="_2021">
+        <h2>2021</h2>
+        <div class="unrep">
+          <h3>Unrepresented</h3>
+          <table class="house unrepresented">
+          </table>
+        </div>
+        <div class="rep">
+          <h3>HOC</h3>
+          <table class="house represented">
+          </table>
+        </div>
+      </div>
+      <div id="_2019">
+        <h2>2019</h2>
+        <div class="unrep">
+          <h3>Unrepresented</h3>
+          <table class="house unrepresented">
+          </table>
+        </div>
+        <div class="rep">
+          <h3>HOC</h3>
+          <table class="house represented">
+          </table>
+        </div>
+      </div>
+      <div id="legend">
+        <h3>Legend</h3>
+        <table>
+          <tr><td class="seat"><div class="in_parliament"/></td><td>sits in both parliaments</td></tr>
+          <tr><td class="seat Conservative"></td><td>Conservative</td></tr>
+          <tr><td class="seat Liberal"></td><td>Liberal</td></tr>
+          <tr><td class="seat NDP-New_Democratic_Party"></td><td>New Democratic</td></tr>
+          <tr><td class="seat Green_Party"></td><td>Green</td></tr>
+          <tr><td class="seat Bloc_Québécois"></td><td>Bloc Québécois</td></tr>
+          <tr><td class="seat Peoples_Party"></td><td>People's</td></tr>
+          <tr><td class="seat Independent"></td><td>Independent</td></tr>
+          <tr><td class="seat Christian_Heritage_Party"></td><td>Christian Heritage</td></tr>
+          <tr><td class="seat Libertarian"></td><td>Libertarian</td></tr>
+          <tr><td class="seat Parti_Rhinocéros_Party"></td><td>Rhinocéros</td></tr>
+          <tr><td class="seat Free_Party_Canada"></td><td>Free Party</td></tr>
+          <tr><td class="seat Maverick_Party"></td><td>Maverick</td></tr>
+        </table>
+      </div>
+    </div>
+    <p>The only votes that are represented are the votes for the winning
+      candidate of an amount equal to the runner up candidate plus one.</p>
+    <p>All other votes are wasted. Excess votes for winning candidates are also
+      wasted. On an individual level it may be more appropriate to think of this
+      waste as a fraction of a vote (e.g. if 20% of votes for a candidate were
+      wasted, then each vote for that candidate was only worth 80% of a 
+      represented vote).</p>
+    <p>How many seats should our parliament have? Well I guess it's only fair if
+      we take the number of seats in the House of Commons (HOC) and multiply
+      that by the number of unrepresented votes divided by represented votes. In
+      2019, that was 14,367 votes per seat.</p>
+    <p>How should we assign seats? Proportional representation, of course, is
+      the best way to reduce the number of unrepresented votes. Each party is
+      given a share of seats proportional to its total vote share.</p>
+    <p>Who should sit in our parliament? The people the unrepresented voters
+      voted for. In some cases, especially for the top Conservatives, they will
+      also sit in the HOC. Members are ranked (within party) in order from most 
+      unrepresented votes to least.</p>
+  </body>
+</html>
