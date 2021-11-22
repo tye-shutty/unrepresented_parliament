@@ -4,13 +4,48 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     <style>
+    body {
+      background-color: lightgrey;
+    }
+    #nav {
+      display: flex;
+      align-items: center;
+    }
+    #nav * {
+      margin: 3px;
+    }
+    .year {
+      padding-left: 20px;
+      padding-right: 20px;
+      background-color: white;
+      border: 2px solid black;
+    }
+    .vertical {
+      display: flex;
+      align-items: flex-start;
+    }
+    .house {
+      margin: 10px;
+    }
     .house tr {
       display: flex;
       justify-content: center;
     }
+    .unrepresented {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
+    .represented {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
     .seat{
-      height: 16;
-      width: 16;
+      height: 10;
+      width: 10;
       border: 1px;
       border-color: black;
       border-style: solid;
@@ -19,12 +54,12 @@
       align-items: center;
     }
     .aisle{
-      height: 16;
-      width: 16;
-    }
-    .in_parliament{
       height: 10;
       width: 10;
+    }
+    .in_parliament{
+      height: 5;
+      width: 5;
       background-color: black;
       border-radius: 50%;
     }
@@ -172,9 +207,6 @@
         white 15px
       );
     }
-    .vertical {
-      display: flex;
-    }
     </style>
   <script>
     function toggleElement(my_id){
@@ -230,42 +262,17 @@
   <body>
     <h1>Parliament of the Unrepresented</h1>
     <div id="nav">
+      <h3>Toggles:</h3>
       <button onclick="toggleAccessibility()">Colour Blind Accessibility
       </button>
-      <button onclick="toggleElement('_2019')">2019</button>
-      <button onclick="toggleElement('_2021')">2021</button>
       <button onclick="toggleElement('legend')">legend</button>
+      <button onclick="toggleElement('_2021')">2021</button>
+      <button onclick="toggleElement('_2019')">2019</button>
     </div>
     <p>What if all the voters that didn't matter made their own parliament, with
       blackjack and proportional representation?</p>
     <p>Hover over the seats to see more information.</p>
     <div class="vertical">
-      <div id="_2021">
-        <h2>2021</h2>
-        <div class="unrep">
-          <h3>Unrepresented</h3>
-          <table class="house unrepresented">
-          </table>
-        </div>
-        <div class="rep">
-          <h3>HOC</h3>
-          <table class="house represented">
-          </table>
-        </div>
-      </div>
-      <div id="_2019">
-        <h2>2019</h2>
-        <div class="unrep">
-          <h3>Unrepresented</h3>
-          <table class="house unrepresented">
-          </table>
-        </div>
-        <div class="rep">
-          <h3>HOC</h3>
-          <table class="house represented">
-          </table>
-        </div>
-      </div>
       <div id="legend">
         <h3>Legend</h3>
         <table>
