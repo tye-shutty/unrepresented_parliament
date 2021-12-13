@@ -90,7 +90,7 @@ def assign_seats(doc, num_seats, SEATS_PER_AISLE, year, curr_parties,
             doc.find(id=row_id).append(blank)
           else:
             doc.find(id=row_id).insert(1, blank)
-        blank['class'] = 'aisle trace'
+        blank['class'] = 'aisle'
       if (
           doc.select_one(f"#{row_id} .aisle") is None and
           party != curr_parties[0] and
@@ -98,7 +98,7 @@ def assign_seats(doc, num_seats, SEATS_PER_AISLE, year, curr_parties,
       ):
         blank = doc.new_tag('td')
         doc.find(id=row_id).append(blank)
-        blank['class'] = 'aisle trace2'
+        blank['class'] = 'aisle'
 
       cell = doc.new_tag('td')
       if opp_seat_count <= num_seats/2:
@@ -120,7 +120,7 @@ def assign_seats(doc, num_seats, SEATS_PER_AISLE, year, curr_parties,
       ):
         blank = doc.new_tag('td')
         doc.find(id=row_id).append(blank)
-        blank['class'] = 'aisle trace3'
+        blank['class'] = 'aisle'
   return doc
 
 
@@ -298,12 +298,6 @@ def parse_csv_format1(candidates):
 
 doc = BeautifulSoup(template, 'html.parser')
 
-with open('2019 results by candidate.csv', "r", newline='') as csvfile:
-  candidates = csv.reader(csvfile, delimiter=',', quotechar='"')
-  candidates = list(candidates)[1:]
-candidates_2019 = parse_csv_format1(candidates)
-doc = make_parliament(doc, candidates_2019, 2019)
-
 with open('2021results_nov14.csv', "r", newline='') as csvfile:
   candidates = csv.reader(csvfile, delimiter='\t')
   candidates = list(candidates)[2:-3]
@@ -341,6 +335,13 @@ for candidate in candidates:
     candidates_2021 += [c]
 
 doc = make_parliament(doc, candidates_2021, 2021)
+
+
+with open('2019 results by candidate.csv', "r", newline='') as csvfile:
+  candidates = csv.reader(csvfile, delimiter=',', quotechar='"')
+  candidates = list(candidates)[1:]
+candidates_2019 = parse_csv_format1(candidates)
+doc = make_parliament(doc, candidates_2019, 2019)
 
 with open('2011 results by candidate.csv', "r", newline='') as csvfile:
   candidates = csv.reader(csvfile, delimiter=',')
