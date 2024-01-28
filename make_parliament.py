@@ -1,3 +1,5 @@
+#!/home/tye/anaconda3/bin/python3
+
 from os import name
 from bs4 import BeautifulSoup, NavigableString
 import csv
